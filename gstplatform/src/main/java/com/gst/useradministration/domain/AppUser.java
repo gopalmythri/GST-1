@@ -120,7 +120,7 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
     @Column(name = "is_self_service_user", nullable = false)
 	private boolean isSelfServiceUser;
     
-    @Column(name = "company_Id", nullable = false)
+    @Column(name = "company_Id")
 	private Long companyId;
     
     
@@ -160,11 +160,12 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
         final String email = command.stringValueOfParameterNamed("email");
         final String firstname = command.stringValueOfParameterNamed("firstname");
         final String lastname = command.stringValueOfParameterNamed("lastname");
+        final Long companyId = command.longValueOfParameterNamed("companyId");
         
         final boolean isSelfServiceUser = command.booleanPrimitiveValueOfParameterNamed(AppUserConstants.IS_SELF_SERVICE_USER);
 
         return new AppUser(userOffice, user, allRoles, email, firstname, lastname, linkedStaff, passwordNeverExpire,
-        		isSelfServiceUser, clients);
+        		isSelfServiceUser, clients,companyId);
     }
 
     protected AppUser() {
@@ -175,7 +176,7 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
 
     public AppUser(final Office office, final User user, final Set<Role> roles, final String email, final String firstname,
             final String lastname, final Staff staff, final boolean passwordNeverExpire, 
-            final boolean isSelfServiceUser, final Collection<Client> clients) {
+            final boolean isSelfServiceUser, final Collection<Client> clients,final Long companyId) {
         this.office = office;
         this.email = email.trim();
         this.username = user.getUsername().trim();
@@ -193,6 +194,7 @@ public class AppUser extends AbstractPersistableCustom<Long> implements Platform
         this.passwordNeverExpires = passwordNeverExpire;
         this.isSelfServiceUser = isSelfServiceUser;
         this.appUserClientMappings = createAppUserClientMappings(clients);
+        this.companyId = companyId;
     }
 
     public EnumOptionData organisationalRoleData() {
