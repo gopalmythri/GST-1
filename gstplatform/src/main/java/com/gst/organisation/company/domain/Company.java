@@ -124,7 +124,7 @@ public class Company extends AbstractPersistableCustom<Long> {
 		final String state = command.stringValueOfParameterNamed("state");
 		final String country = command.stringValueOfParameterNamed("country");
 		final String pin = command.stringValueOfParameterNamed("pin");
-		final Long officeId = command.longValueOfParameterNamed("pin");
+		final Long officeId = command.longValueOfParameterNamed("officeId");
 
 		return new Company(gstin,companyName, contactName, officePhone, homePhone, mobile, fax,
 				email, gstnRegNo, panNo, addressLine1, addressLine2, city, state, country, pin, officeId);
