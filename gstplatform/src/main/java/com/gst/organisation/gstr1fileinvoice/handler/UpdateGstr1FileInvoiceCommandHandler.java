@@ -11,7 +11,7 @@ import com.gst.organisation.gstr1fileinvoice.service.Gstr1FileInvoiceWritePlatfo
 
 
 @Service
-@CommandType(entity = "GSTR1FILEINVOICE", action = "UPDATE")
+@CommandType(entity = "GSTR1FILEINVOICEDATA", action = "UPDATE")
 public class UpdateGstr1FileInvoiceCommandHandler implements NewCommandSourceHandler {
 
 	private final Gstr1FileInvoiceWritePlatformService gstr1FileInvoiceWritePlatformService;

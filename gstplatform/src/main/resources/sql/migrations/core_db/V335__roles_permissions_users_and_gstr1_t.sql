@@ -10,8 +10,8 @@ insert ignore into m_role_permission values(
 (select id from m_permission mp where mp.code = 'UPDATE_GSTR1FILEINVOICEDATASTATUS'));
 
 
-INSERT IGNORE INTO `m_office`(`parent_id`,`name`,`opening_date`)
-VALUES(1,'Basic',now());
+INSERT IGNORE INTO `m_office`(`parent_id`,`name`,`hierarchy`,`opening_date`)
+VALUES(1,'Basic','.',now());
 
-INSERT IGNORE INTO `m_office`(`parent_id`,`name`,`opening_date`)
-VALUES(1,'Advance',now());
+INSERT IGNORE INTO `m_office`(`parent_id`,`name`,`hierarchy`,`opening_date`)
+VALUES(1,'Advance','.',now());

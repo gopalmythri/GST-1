@@ -3037,7 +3037,7 @@ public class CommandWrapperBuilder {
 
         public CommandWrapperBuilder createGstr1FileInvoice() {
         this.actionName = "CREATE";
-        this.entityName = "GSTR1FILEINVOICE";
+        this.entityName = "GSTR1FILEINVOICEDATA";
         this.entityId = null;
         this.href = "/gstr1fileinvoicedata/";
         return this;
@@ -3045,7 +3045,7 @@ public class CommandWrapperBuilder {
     
     public CommandWrapperBuilder updateGstr1FileInvoice(final Long gstr1FileInvId) {
         this.actionName = "UPDATE";
-        this.entityName = "GSTR1FILEINVOICE";
+        this.entityName = "GSTR1FILEINVOICEDATA";
         this.entityId = gstr1FileInvId;
         this.href = "/gstr1fileinvoicedata/"+gstr1FileInvId;
         return this;

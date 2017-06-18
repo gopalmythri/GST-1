@@ -11,7 +11,7 @@ import com.gst.infrastructure.core.data.CommandProcessingResult;
 import com.gst.organisation.gstr1fileinvoice.service.Gstr1FileInvoiceWritePlatformService;
 
 @Service
-@CommandType(entity = "GSTR1FILEINVOICE", action = "CREATE")
+@CommandType(entity = "GSTR1FILEINVOICEDATA", action = "CREATE")
 public class CreateGstr1FileInvoiceCommandHandler implements NewCommandSourceHandler {
 
 	private final Gstr1FileInvoiceWritePlatformService gstr1FileInvoiceWritePlatformService;
