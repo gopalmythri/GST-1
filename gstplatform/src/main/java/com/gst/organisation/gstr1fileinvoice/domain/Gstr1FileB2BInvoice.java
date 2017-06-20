@@ -72,7 +72,7 @@ public class Gstr1FileB2BInvoice extends AbstractPersistableCustom<Long> {
 	private Integer recordType;
 
 	@Column(name = "status")
-	private String status;
+	private String status="1";
 
 	@Column(name = "error_code")
 	private String errorCode;
@@ -92,7 +92,7 @@ public class Gstr1FileB2BInvoice extends AbstractPersistableCustom<Long> {
 			final String supplyPlace,final String orderNo,final String orderDate,
 			final String etin,final Long invoiceId,final String flag,final String checkSum,
 			final Integer isReverse,final Integer isProvisional,final Integer recordType,
-			final String status,final String errorCode,final String errorDescriptor) {
+			final String errorCode,final String errorDescriptor) {
 
 		this.gstin = gstin;
 		this.fp = fp;
@@ -110,7 +110,6 @@ public class Gstr1FileB2BInvoice extends AbstractPersistableCustom<Long> {
 		this.isReverse = isReverse;
 		this.isProvisional = isProvisional;
 		this.recordType = recordType;
-		this.status = status;
 		this.errorCode = errorCode;
 		this.errorDescriptor = errorDescriptor;
 	}
@@ -137,13 +136,12 @@ public class Gstr1FileB2BInvoice extends AbstractPersistableCustom<Long> {
 		final Integer isReverse = command.integerValueOfParameterNamed("isReverse");
 		final Integer isProvisional = command.integerValueOfParameterNamed("isProvisional");
 		final Integer recordType = command.integerValueOfParameterNamed("recordType");
-		final String status = command.stringValueOfParameterNamed("status");
 		final String errorCode = command.stringValueOfParameterNamed("errorCode");
 		final String errorDescriptor = command.stringValueOfParameterNamed("errorDescriptor");
 
 		return new Gstr1FileB2BInvoice(gstin, fp, fileNo, supplierInvNo, supplierInvDate, supplierInvValue, 
 				supplyPlace,orderNo,orderDate,etin,invoiceId,flag,checkSum,isReverse,isProvisional,
-				recordType,status,errorCode,errorDescriptor);
+				recordType,errorCode,errorDescriptor);
 	}
 
 	/**

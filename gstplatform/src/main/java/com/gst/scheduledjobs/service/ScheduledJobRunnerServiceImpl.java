@@ -20,9 +20,12 @@ package com.gst.scheduledjobs.service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,11 +47,14 @@ import com.gst.infrastructure.core.service.ThreadLocalContextUtil;
 import com.gst.infrastructure.jobs.annotation.CronTarget;
 import com.gst.infrastructure.jobs.exception.JobExecutionException;
 import com.gst.infrastructure.jobs.service.JobName;
+import com.gst.organisation.gstr1fileinvoice.data.Gstr1FileInvoiceData;
 import com.gst.organisation.gstr1fileinvoice.domain.Gstr1FileB2BInvoice;
 import com.gst.organisation.gstr1fileinvoice.domain.Gstr1FileB2BInvoiceRepository;
 import com.gst.organisation.gstr1fileinvoice.domain.Gstr1FileB2BItem;
 import com.gst.organisation.gstr1fileinvoice.domain.Gstr1FileB2BItemRepository;
+import com.gst.organisation.gstr1fileinvoice.domain.Gstr1FileInvoice;
 import com.gst.organisation.gstr1fileinvoice.domain.Gstr1FileInvoiceRepository;
+import com.gst.organisation.gstr1fileinvoice.service.Gstr1FileInvoiceReadPlatformService;
 import com.gst.organisation.outwardstaginginv.data.OutWardStagingItemData;
 import com.gst.organisation.outwardstaginginv.domain.OutWardStagingInv;
 import com.gst.organisation.outwardstaginginv.domain.OutWardStagingInvRepository;
@@ -85,6 +91,7 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
     private final Gstr1FileB2BItemRepository gstr1FileB2BItemsRepository;
     private final OutWardStagingItemReadPlatformService outWardStagingItemReadPlatformService;
     private final OutWardStagingInvRepository outWardStagingInvRepository;
+    private final Gstr1FileInvoiceReadPlatformService gstr1FileInvoiceReadPlatformService;
 
     @Autowired
     public ScheduledJobRunnerServiceImpl(final RoutingDataSourceServiceFactory dataSourceServiceFactory,
@@ -99,7 +106,8 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
             final Gstr1FileB2BInvoiceRepository gstr1FileB2BInvoiceRepository,
             final Gstr1FileB2BItemRepository gstr1FileB2BItemsRepository,
             final OutWardStagingItemReadPlatformService outWardStagingItemReadPlatformService,
-            final OutWardStagingInvRepository outWardStagingInvRepository) {
+            final OutWardStagingInvRepository outWardStagingInvRepository,
+            final Gstr1FileInvoiceReadPlatformService gstr1FileInvoiceReadPlatformService) {
        
     	this.dataSourceServiceFactory = dataSourceServiceFactory;
         this.savingsAccountWritePlatformService = savingsAccountWritePlatformService;
@@ -114,6 +122,7 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
         this.gstr1FileB2BItemsRepository = gstr1FileB2BItemsRepository;
         this.outWardStagingItemReadPlatformService = outWardStagingItemReadPlatformService;
         this.outWardStagingInvRepository = outWardStagingInvRepository;
+        this.gstr1FileInvoiceReadPlatformService = gstr1FileInvoiceReadPlatformService;
     }
 
     @Transactional
@@ -441,6 +450,8 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
     }
     
     
+    
+    
     @Transactional
     @Override
     @CronTarget(jobName = JobName.OUTWARD_STAGING_TO_PROCESS)
@@ -448,34 +459,72 @@ public class ScheduledJobRunnerServiceImpl implements ScheduledJobRunnerService 
     	
     	Gstr1FileB2BInvoice gstr1FileB2BInvoice = null;
     	List<Gstr1FileB2BItem> gstr1FileB2BItems = new ArrayList<Gstr1FileB2BItem>();
+    	Collection<Gstr1FileInvoiceData> gstr1FileInvoiceDatas = this.gstr1FileInvoiceReadPlatformService.retriveGstr1FileInvoiceData();
     	List<OutWardStagingInv> outWardStagingInvDatas = this.outWardStagingInvRepository.findAllOutWardStagingInv();
     	System.out.println("Schedler Job 'Outward staging to process' is triggered now");
-    	/*Gstr1FileInvoice fileInv = new Gstr1FileInvoice("12343", "062017","12", "1234",1, 1,"asdf","errorCode",
-    			"errorDescriptor","reviewComments");
-    	this.gstr1FileInvoiceRepository.saveAndFlush(fileInv);*/
+    	
     	
     	for(OutWardStagingInv outWardStagingInvData:outWardStagingInvDatas){
     		
+    		Map<String,String> mapData = this.gstr1fileCreationOperation(outWardStagingInvData,gstr1FileInvoiceDatas);
     		
-    		gstr1FileB2BInvoice = new Gstr1FileB2BInvoice(outWardStagingInvData.getGstin(), "092017", "1234".toString(), outWardStagingInvData.getSupplierInvNo(), 
+    		final String fileNo = mapData.get("gstin").concat("-").concat(mapData.get("fp"));
+    		
+    		gstr1FileB2BInvoice = new Gstr1FileB2BInvoice(outWardStagingInvData.getGstin(),mapData.get("fp"), fileNo, outWardStagingInvData.getSupplierInvNo(), 
     				outWardStagingInvData.getSupplierInvDate(), outWardStagingInvData.getSupplierInvValue(), "SP", 
-    				outWardStagingInvData.getOrderNo(), "082017", outWardStagingInvData.getEtin(), outWardStagingInvData.getInvoiceId(), "3",
-    				"chkSum",1,1,1, "0", outWardStagingInvData.getErrorCode(), 
+    				outWardStagingInvData.getOrderNo(), mapData.get("mp"), outWardStagingInvData.getEtin(), outWardStagingInvData.getInvoiceId(), "3",
+    				"chkSum",1,1,1, outWardStagingInvData.getErrorCode(), 
     				outWardStagingInvData.getErrorDescripter());
     		this.gstr1FileB2BInvoiceRepository.saveAndFlush(gstr1FileB2BInvoice);
     		
     		List<OutWardStagingItemData> outWardStagingItemDatas = this.outWardStagingItemReadPlatformService.retriveOutwardStagingInvItems(outWardStagingInvData.getInvoiceId());
     		for( OutWardStagingItemData outWardStagingItemData: outWardStagingItemDatas){
-    			gstr1FileB2BItems.add(new Gstr1FileB2BItem(outWardStagingItemData.getInvoiceId(), "fdsfs", outWardStagingItemData.getItemType(), outWardStagingItemData.getItemCode(), 
+    			gstr1FileB2BItems.add(new Gstr1FileB2BItem(outWardStagingItemData.getInvoiceId(), fileNo, outWardStagingItemData.getItemType(), outWardStagingItemData.getItemCode(), 
     					outWardStagingItemData.getTaxValue(), outWardStagingItemData.getIgstRate(), outWardStagingItemData.getIgstAmount(), outWardStagingItemData.getCgstRate(),
     					outWardStagingItemData.getCgstAmount(),outWardStagingItemData.getSgstRate(), outWardStagingItemData.getSgstAmount(), outWardStagingItemData.getCessRate(),
-    					outWardStagingItemData.getCessAmount(), outWardStagingItemData.getStatus(), outWardStagingItemData.getErrorCode(), outWardStagingItemData.getErrorDescripter()));
+    					outWardStagingItemData.getCessAmount(), outWardStagingItemData.getErrorCode(), outWardStagingItemData.getErrorDescripter()));
     					
     		}
     		this.gstr1FileB2BItemsRepository.save(gstr1FileB2BItems);
     		outWardStagingInvData.setStatus(1);
+    		if("true".equalsIgnoreCase(mapData.get("new"))){
+    			gstr1FileInvoiceDatas = this.gstr1FileInvoiceReadPlatformService.retriveGstr1FileInvoiceData();
+    		}
+    			
     	}
-    	this.outWardStagingInvRepository.save(outWardStagingInvDatas);
+    	if(outWardStagingInvDatas.size()>0){
+    		this.outWardStagingInvRepository.save(outWardStagingInvDatas);
+    	}
     }
+
+	private Map gstr1fileCreationOperation(OutWardStagingInv outWardStagingInvData,final Collection<Gstr1FileInvoiceData> gstr1FileInvoiceDatas) {
+		String fp;
+		String gstin = outWardStagingInvData.getGstin();
+		boolean found = false;
+		Gstr1FileInvoice fileInv = null;
+		Map<String,String> returnData = new  HashMap<String,String>();
+		
+		try {
+			fp = (new SimpleDateFormat("ddMMyyyy")).format(outWardStagingInvData.getSupplierInvDate());
+			fp = fp.substring(2);
+			for(Gstr1FileInvoiceData gstr1FileInvoiceData:gstr1FileInvoiceDatas){
+				if(gstr1FileInvoiceData.getFp().equalsIgnoreCase(fp.toString()) && gstin.equalsIgnoreCase(gstr1FileInvoiceData.getGstin())){
+					found = true;break;
+				}
+			}
+			if(!found){
+				fileInv = new Gstr1FileInvoice(gstin, fp, fp.substring(0, 2), gstin.concat("-").concat(fp),1, 1,null,null,
+		    			null,null);
+				this.gstr1FileInvoiceRepository.saveAndFlush(fileInv);
+				returnData.put("new", "true");
+			}else{returnData.put("new", "false");}
+			returnData.put("fp", fp);returnData.put("gstin", gstin);
+		
+		return returnData;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException();
+		}
+	}
     
 }

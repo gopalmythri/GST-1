@@ -63,7 +63,7 @@ public class Gstr1FileB2BItem extends AbstractPersistableCustom<Long> {
 	private BigDecimal cessAmount;
 
 	@Column(name = "status")
-	private Integer status;
+	private Integer status = 1;
 	
 	@Column(name = "error_code")
 	private String errorCode;
@@ -78,7 +78,7 @@ public class Gstr1FileB2BItem extends AbstractPersistableCustom<Long> {
 	public Gstr1FileB2BItem(final Long invoiceId, final String fileNo,final String itemType, final String itemCode,
 			final BigDecimal taxValue, final BigDecimal igstRate,final BigDecimal igstAmount,final BigDecimal cgstRate,final BigDecimal cgstAmount,
 			final BigDecimal sgstRate,final BigDecimal sgstAmount,final BigDecimal cessRate,final BigDecimal cessAmount,
-			final Integer status,final String errorCode,final String errorDescriptor) {
+			final String errorCode,final String errorDescriptor) {
 
 		this.invoiceId = invoiceId;
 		this.fileNo = fileNo;
@@ -93,7 +93,6 @@ public class Gstr1FileB2BItem extends AbstractPersistableCustom<Long> {
 		this.sgstAmount = sgstAmount;
 		this.cessRate = cessRate;
 		this.cessAmount = cessAmount;
-		this.status = status;
 		this.errorCode = errorCode;
 		this.errorDescriptor = errorDescriptor;
 	}
@@ -123,7 +122,7 @@ public class Gstr1FileB2BItem extends AbstractPersistableCustom<Long> {
 		final String errorDescriptor = command.stringValueOfParameterNamed("errorDescriptor");
 
 		return new Gstr1FileB2BItem(invoiceId, fileNo, itemType, itemCode, taxValue, 
-				igstRate,igstAmount,cgstRate,cgstAmount,sgstRate,sgstAmount,cessRate,cessAmount,status,errorCode,errorDescriptor);
+				igstRate,igstAmount,cgstRate,cgstAmount,sgstRate,sgstAmount,cessRate,cessAmount,errorCode,errorDescriptor);
 	}
 
 	/**

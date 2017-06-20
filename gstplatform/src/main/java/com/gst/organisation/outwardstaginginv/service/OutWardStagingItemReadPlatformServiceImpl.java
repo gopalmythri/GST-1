@@ -4,11 +4,13 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+
 import com.gst.infrastructure.core.service.RoutingDataSource;
 import com.gst.organisation.outwardstaginginv.data.OutWardStagingItemData;
 
@@ -32,13 +34,13 @@ public class OutWardStagingItemReadPlatformServiceImpl implements OutWardStaging
 	 * 
 	 * @see #retrieveAllOutWardInvData()
 	 */
-	public List<OutWardStagingItemData> retrieveAllOutWardItemData() {
+	public OutWardStagingItemData retrieveOutWardItemData(Long id) {
 
 		final OutWardInvDataMapper mapper = new OutWardInvDataMapper();
 
-		final String sql = "Select Distinct " + mapper.schema();
+		final String sql = "Select Distinct " + mapper.schema()+" where ost.id = ?";
 
-		return this.jdbcTemplate.query(sql, mapper, new Object[] {});
+		return this.jdbcTemplate.queryForObject(sql, mapper, new Object[] {id});
 	}
 
 	private static final class OutWardInvDataMapper implements

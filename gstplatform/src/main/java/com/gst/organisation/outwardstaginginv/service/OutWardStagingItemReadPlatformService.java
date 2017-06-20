@@ -10,7 +10,7 @@ import com.gst.organisation.outwardstaginginv.data.OutWardStagingItemData;
  */
 public interface OutWardStagingItemReadPlatformService {
 
-	List<OutWardStagingItemData> retrieveAllOutWardItemData();
+	OutWardStagingItemData retrieveOutWardItemData(Long id);
 
 	List<OutWardStagingItemData> retriveOutwardStagingInvItems(Long invoiceId);
 

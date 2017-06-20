@@ -68,10 +68,10 @@ public class OutWardStagingItemApiResource {
 	@GET
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public String retrieveAllOutWardItemData(@Context final UriInfo uriInfo) {
+	public String retrieveAllOutWardItemData(@Context final UriInfo uriInfo,@PathParam("outWardInvoiceId") final Long outWardInvoiceId) {
 		
-	    context.authenticatedUser().validateHasReadPermission(resourceNameForPermissions);
-		final List<OutWardStagingItemData> outWardStagingItemData = this.outWardStagingItemReadPlatformService.retrieveAllOutWardItemData();
+	    this.context.authenticatedUser().validateHasReadPermission(resourceNameForPermissions);
+		final List<OutWardStagingItemData> outWardStagingItemData = this.outWardStagingItemReadPlatformService.retriveOutwardStagingInvItems(outWardInvoiceId);
 		final ApiRequestJsonSerializationSettings settings = apiRequestParameterHelper.process(uriInfo.getQueryParameters());
 		return this.toApiJsonSerializer.serialize(settings, outWardStagingItemData,RESPONSE_PARAMETERS);
 
@@ -92,14 +92,14 @@ public class OutWardStagingItemApiResource {
 	}
 	
 	@GET
-	@Path("{invoiceId}")
+	@Path("{id}")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
 
-	public String retrieveSingleOutWardItemDataDetails(@PathParam("invoiceId") final Long invoiceId,@Context final UriInfo uriInfo) {
+	public String retrieveSingleOutWardItemDataDetails(@PathParam("id") final Long id,@Context final UriInfo uriInfo) {
 	   
-		context.authenticatedUser().validateHasReadPermission(resourceNameForPermissions);
-		List<OutWardStagingItemData> outWardStagingItemData = this.outWardStagingItemReadPlatformService.retriveOutwardStagingInvItems(invoiceId);
+		this.context.authenticatedUser().validateHasReadPermission(resourceNameForPermissions);
+		OutWardStagingItemData outWardStagingItemData = this.outWardStagingItemReadPlatformService.retrieveOutWardItemData(id);
 		final ApiRequestJsonSerializationSettings settings = apiRequestParameterHelper.process(uriInfo.getQueryParameters());
 		return this.toApiJsonSerializer.serialize(settings,outWardStagingItemData,RESPONSE_PARAMETERS);
 	}
